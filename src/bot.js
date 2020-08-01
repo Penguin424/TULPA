@@ -16,8 +16,6 @@ for (const file of commadsFiles) {
   bot.commads.set(commad.name, commad);
 }
 
-console.log(bot.commads);
-
 bot.once("ready", () => {
   console.log("Ready!");
 });
@@ -28,6 +26,26 @@ bot.once("reconnecting", () => {
 
 bot.once("disconnect", () => {
   console.log("Disconnect!");
+});
+
+bot.on("message", async (msg) => {
+  const args = msg.content.slice(prefix.length).split(/ +/);
+  const commadName = args.shift().toLowerCase();
+  const command = bot.commads.get(commadName);
+
+  if (msg.author.bot) return;
+  if (!msg.content.startsWith(prefix)) return;
+
+  try {
+    if (command !== undefined) {
+      command.execute(msg);
+    } else {
+      msg.reply("El comando que quisiste ejecutar a un no esta programado");
+    }
+  } catch (error) {
+    console.error(error);
+    msg.reply("Hubo un error al ejecutar el comando");
+  }
 });
 
 bot.login(token);
