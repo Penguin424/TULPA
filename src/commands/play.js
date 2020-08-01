@@ -51,7 +51,7 @@ module.exports = {
         }
       } else {
         serverQueue.songs.push(song);
-        return msg.channel.send(`${song.title} has been added to the queue!`);
+        return msg.channel.send(`${song.title} fue agregada a la cola!`);
       }
 
       console.log(args);
@@ -85,6 +85,6 @@ module.exports = {
       })
       .on("error", (error) => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+    serverQueue.textChannel.send(`Emepezo a reproducirse: **${song.title}**`);
   },
 };
