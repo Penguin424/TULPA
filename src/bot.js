@@ -1,34 +1,33 @@
-const { config } = require('dotenv');
-config();
+const fs = require("fs");
+const Discord = require("discord.js");
+const Bot = require("./client/Client.js");
+const { token, prefix } = require("./config.json");
+const { join } = require("path");
 
-const { Client } = require('discord.js');
-const { prefix } = require('./config.json');
+const bot = new Bot();
+bot.commads = new Discord.Collection();
 
-const bot = new Client();
+const commadsFiles = fs
+  .readdirSync(join(__dirname, "/commands"))
+  .filter((file) => file.endsWith(".js"));
 
-bot.on('ready', () => {
-  console.log('Bot on ready');
+for (const file of commadsFiles) {
+  const commad = require(join(__dirname, "/commands", "/", file));
+  bot.commads.set(commad.name, commad);
+}
+
+console.log(bot.commads);
+
+bot.once("ready", () => {
+  console.log("Ready!");
 });
 
-bot.on('message', async (message) => {
-  if (message.content.startsWith(`${prefix}ping`)) {
-    // message.channel.send('pong');
-    message.reply('pong!');
-    console.log(message.guild);
-  }
-
-  if (message.content.startsWith(`${prefix}kick`)) {
-    const member = message.mentions.members.first();
-
-    if (member) {
-      const kikmember = await member.kick();
-
-      console.log(kikmember.user.username);
-      message.channel.send(
-        `Ha ${kikmember.user.username} le gusta la verga por eso a sido expulsado`
-      );
-    }
-  }
+bot.once("reconnecting", () => {
+  console.log("Reconnecting!");
 });
 
-bot.login(process.env.DISCORD_TOKEN);
+bot.once("disconnect", () => {
+  console.log("Disconnect!");
+});
+
+bot.login(token);
