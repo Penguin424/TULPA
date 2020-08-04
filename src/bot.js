@@ -1,7 +1,7 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 const Bot = require("./client/Client.js");
-const { token, prefix } = require("./config.json");
+const { prefix } = require("./config.json");
 const { join } = require("path");
 
 const bot = new Bot();
@@ -48,4 +48,4 @@ bot.on("message", async (msg) => {
   }
 });
 
-bot.login(token);
+bot.login(process.env.DISCORD_TOKEN);
