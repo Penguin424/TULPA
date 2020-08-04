@@ -5,25 +5,6 @@ module.exports = {
   name: "play",
   description: "Reproduce una cancion",
   async execute(msg) {
-    // let cancion = await msg.content.split(" ").slice(1).join(" ");
-
-    // let resultados = await ytsr.getFilters(cancion);
-
-    // let filter = await resultados.get("Type").find((v) => v.name === "Video");
-
-    // let videos = await ytsr(filter.ref, { limit: 5, nextpageRef: filter.ref });
-    // let linksVideos = videos.items.map((l) => l.link);
-
-    // let formatoPrint = await videos.items
-    //   .map((item, index) => {
-    //     return `${index} - ${item.title}`;
-    //   })
-    //   .join("\n");
-
-    // console.log(linksVideos);
-
-    // msg.reply(`\nEscoje tu cancion\n${formatoPrint}`);
-
     try {
       const args = msg.content.split(" ").slice(1).join(" ");
       let songInfo;
@@ -36,6 +17,32 @@ module.exports = {
           url: songInfo.videoDetails.video_url,
         };
       } else {
+        let cancion = await msg.content.split(" ").slice(1).join(" ");
+
+        let resultados = await ytsr.getFilters(cancion);
+
+        let filter = await resultados.get("Type").find((v) => v.name === "Video");
+
+        let videos = await ytsr(filter.ref, { limit: 5, nextpageRef: filter.ref });
+        let linksVideos = videos.items.map((l) => l.link);
+
+        let formatoPrint = await videos.items
+          .map((item, index) => {
+            return `${index} - ${item.title}`;
+          })
+          .join("\n");
+
+        msg.reply(`\nEscoje tu cancion\n${formatoPrint}`);
+
+        let data = await msg.channel.awaitMessages((a) => a.content, { max: 2, time: 60000 });
+
+        let link = linksVideos[data.array()[1].content];
+
+        songInfo = await ytdl.getInfo(link);
+        song = {
+          title: songInfo.videoDetails.title,
+          url: songInfo.videoDetails.video_url,
+        };
       }
 
       const queue = msg.client.queue;
